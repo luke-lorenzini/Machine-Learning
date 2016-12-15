@@ -1,4 +1,4 @@
-def linreg(x, y, t, a):
+def linreg(x, y, t, a, s):
     import numpy as np
 
     myx = x
@@ -12,34 +12,44 @@ def linreg(x, y, t, a):
     theta_t = np.matrix(np.zeros(numcols))
     # Make the difference large
     difference = 3 * theta
-    lamb = 1000
-    scale = 1
 
+    #h_theta(x) = 1/(1-e^(theta^T * x))
     def calc_h(row):
-        myh = 0
+        h_theta = 0
         for i in range(numcols):
-            myh += (theta[0, i] * myx[row, i])
-        return myh
+            h_theta += theta[0, i] * myx[row, i]
+        return h_theta
 
-    def calc_j(col):
-        myj = 0
-        for row in range(numrows):
-            myj += (calc_h(row) - myy[row]) *  myx[row, col]
-        myj /= numrows
-        return myj
+    def v_calc_h():
+        h_theta = myx * theta.T
+        return h_theta
 
-    #scale = (1 - alpha * lamb / numrows)
+    learn = alpha / numrows
+    while abs(difference[0, 0]) > threshold:
+    # for repeats in range(1):
+        if s == 0: # Slowest - Basic implementation, no optimizations
+            for col in range(numcols):
+                temp = 0
+                for row in range(numrows):
+                    temp += (calc_h(row) - myy[row, 0]) * myx[row, col]
+                theta_t[0, col] = theta[0, col] - alpha / numrows * temp
+        elif s == 1: # Slower - Uses vectorized calculation for theta to speed things up
+            temp_theta = v_calc_h()
+            for col in range(numcols):
+                temp = 0
+                for row in range(numrows):
+                    temp += (temp_theta[row, 0] - myy[row, 0]) * myx[row, col]
+                theta_t[0, col] = theta[0, col] - alpha / numrows * temp
+        elif s == 2: # Slow (the fastest)
+            # theta_t = theta - (alpha / m) * X.T(g(X*theta) - Y)
+            temp = theta.T - learn * myx.T * (v_calc_h() - myy)
+            theta_t = temp.T
 
-    # theta_j = theta_j-alpha*d/dtheta(J_theta)
-    while((abs(difference[0, 0]) > threshold) & (abs(difference[0, 1]) > threshold)):
-        for col in range(numcols):
-            if col == 0:
-                theta_t[0, col] = theta[0, col] - alpha * calc_j(col)
-            else:
-                theta_t[0, col] = theta[0, col] * scale - alpha * calc_j(col)
+        # Comparison to determine stop condition
         difference = theta - theta_t
-        for col in range(numcols):
-            theta[0, col] = theta_t[0, col]
+
+        # Update the values for theta
+        np.copyto(theta, theta_t)
         print(theta)
 
     return theta
