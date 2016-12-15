@@ -1,10 +1,8 @@
 def logreg(x, y, t, a, s):
-    import math
+    #import math
     import numpy as np
 
     myx = x
-    #myx = np.matrix(x.shape[0], x.shape[1])
-    #np.copyto(myx, x)
     myy = y
     theta = t
     alpha = a
@@ -31,8 +29,9 @@ def logreg(x, y, t, a, s):
         return myx * theta.T
 
     somenumber = alpha / numrows
-    while (abs(difference[0, 0]) > threshold) & (abs(difference[0, 1]) > threshold):
-    #for repeats in range(40000):
+    while (abs(difference[0, 0]) > threshold):
+    # while (abs(difference[0, 0]) > threshold) & (abs(difference[0, 1]) > threshold):
+    # for repeats in range(1):
         if s == 0: # Slowest - Basic implementation, no optimizations
             for col in range(numcols):
                 temp = 0
@@ -47,8 +46,7 @@ def logreg(x, y, t, a, s):
                     temp += (temp_theta[row, 0] - myy[row, 0]) * myx[row, col]
                 theta_t[0, col] = theta[0, col] - alpha / numrows * temp
         elif s == 2: # Slow (the fastest)
-            xxx = v_calc_h()
-            temp = theta.T - somenumber * myx.T * (xxx - myy)
+            temp = theta.T - somenumber * myx.T * (v_calc_h() - myy)
             theta_t = temp.T
 
         # Comparison to determine stop condition
