@@ -1,5 +1,5 @@
 def logreg(x, y, t, a, s):
-    #import math
+    import math
     import numpy as np
 
     myx = x
@@ -13,24 +13,24 @@ def logreg(x, y, t, a, s):
     theta_t = np.matrix(np.zeros(numcols))
     # Make the difference large
     difference = 3 * theta
-    #lamb = 1000
-    #scale = 1
 
     #h_theta(x) = 1/(1-e^(theta^T * x))
     def calc_h(row):
         h_theta = 0
         for i in range(numcols):
             h_theta += theta[0, i] * myx[row, i]
-        #h_theta = 1 / (1 - math.exp(h_theta))
+        #xx = 1 / (1 - math.exp(h_theta))
+        # return xx
         return h_theta
 
     def v_calc_h():
-        #h_theta = myx * theta.T
-        return myx * theta.T
+        h_theta = myx * theta.T
+        #xx = 1 / (1 - math.exp(h_theta))
+        # return xx
+        return h_theta
 
     somenumber = alpha / numrows
-    while (abs(difference[0, 0]) > threshold):
-    # while (abs(difference[0, 0]) > threshold) & (abs(difference[0, 1]) > threshold):
+    while abs(difference[0, 0]) > threshold:
     # for repeats in range(1):
         if s == 0: # Slowest - Basic implementation, no optimizations
             for col in range(numcols):
@@ -46,6 +46,7 @@ def logreg(x, y, t, a, s):
                     temp += (temp_theta[row, 0] - myy[row, 0]) * myx[row, col]
                 theta_t[0, col] = theta[0, col] - alpha / numrows * temp
         elif s == 2: # Slow (the fastest)
+            # theta_t = theta - (alpha / m) * X.T(g(X*theta) - Y)
             temp = theta.T - somenumber * myx.T * (v_calc_h() - myy)
             theta_t = temp.T
 
@@ -57,4 +58,3 @@ def logreg(x, y, t, a, s):
         print(theta)
 
     return theta
-
