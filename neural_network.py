@@ -1,26 +1,32 @@
+# Receive a matrix [mx1] representing initial values
 def NeuralNet(x):
     import math
     import numpy
+    import numpy.matlib
 
-    theta = 1
+    # Initialize a matrix of dimensions [mxn]
+    # with random numbers
+    # input: row = number of rows, col = number of columns
+    # output: theta [mxn] matrix of random
+    def init_weights(row, col):
+        theta = numpy.matlib.rand(row, col)
+        return theta
 
     # Append a '1' to the beginning of the vector
     # input: x = [nx1]
     # output x = [(n+1)x1]
     def append(x):
-        #x = numpy.r_[np.ones(myx.shape[0]), myx]
-        # myx =  numpy.r_["1", x]
-        myx = x
-        myx = numpy.vstack('1', x)
-        return myx
+        theta = numpy.vstack((1, x))
+        return theta
 
     # Solve z = theta * a
     # input: theta = [mxn], a = [nx1]
     # output: z = [mx1]
     def calc_z(a, theta):
-        return theta * a
+        z = theta * a
+        return z
 
-    # calculate the function g(z)
+    # Calculate the function g(z)
     # g(z) = 1/(1+e^(-z))
     # input: z = [nx1]
     # output a = [1x1]
@@ -31,9 +37,50 @@ def NeuralNet(x):
             a[i] = 1 / (1 + math.exp(-1 * z[i]))
         return a
 
-    # Run sequence of append, calc_z, calc_a for L-1 layers in network
-    #def fwdProp():
-    #print(append(x))
-    print(calc_a(x))
-        #print(calc_a(calc_z(append(x), theta)))
+    # Use an [mxn] matrix to create an [nx(n+1)]
+    theta1 = init_weights(x.shape[0], x.shape[0] + 1)
+    print("theta 1")
+    print(theta1)
+    print("")
 
+    theta2 = init_weights(3, 5)
+    print("theta 2")
+    print(theta2)
+    print("")
+
+    # Step 1, append the bias
+    a1 = append(x)
+    print("a1")
+    print(a1)
+    print("")
+
+    # Step 2, calculate z
+    z1 = calc_z(a1, theta1)
+    print("z1")
+    print(z1)
+    print("")
+
+    # Step 3, transform z
+    a2 = calc_a(z1)
+    # print("a2")
+    # print(a2)
+    # print("")
+
+    # second layer
+    # Step 1, append the bias
+    a2 = append(a2)
+    print("a2")
+    print(a2)
+    print("")
+
+    # Step 2, calculate z
+    z2 = calc_z(a2, theta2)
+    print("z2")
+    print(z2)
+    print("")
+
+    # Step 3, transform z
+    a3 = calc_a(z2)
+    print("a3")
+    print(a3)
+    print("")
