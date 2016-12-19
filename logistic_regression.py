@@ -14,18 +14,18 @@ def logreg(x, y, t, a, s):
     # Make the difference large
     difference = 3 * theta
 
-    #h_theta(x) = 1/(1-e^(theta^T * x))
+    #h_theta(x) = 1/(1+e^(-theta^T * x))
     def calc_h(row):
         h_theta = 0
         for i in range(numcols):
             h_theta += theta[0, i] * myx[row, i]
-        #xx = 1 / (1 - math.exp(h_theta))
+        #xx = 1 / (1 + math.exp(-1*h_theta))
         # return xx
         return h_theta
 
     def v_calc_h():
         h_theta = myx * theta.T
-        #xx = 1 / (1 - math.exp(h_theta))
+        #xx = 1 / (1 + math.exp(-1*h_theta))
         # return xx
         return h_theta
 
