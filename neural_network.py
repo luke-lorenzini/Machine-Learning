@@ -1,5 +1,5 @@
 # Receive a matrix [mx1] representing initial values
-def NeuralNet(x):
+def NeuralNet(x, y):
     import math
     import numpy
     import numpy.matlib
@@ -62,9 +62,9 @@ def NeuralNet(x):
 
     # Step 3, transform z
     a2 = calc_a(z1)
-    # print("a2")
-    # print(a2)
-    # print("")
+    print("a2")
+    print(a2)
+    print("")
 
     # second layer
     # Step 1, append the bias
@@ -83,4 +83,17 @@ def NeuralNet(x):
     a3 = calc_a(z2)
     print("a3")
     print(a3)
+    print("")
+
+    # Start back propogation
+    # Calculate errors for layer 3
+    d3 = y - a3
+    print("d3")
+    print(d3)
+    print("")
+
+    # Calculate errors for layer 2
+    d2 = numpy.multiply((theta2.T * d3), (numpy.multiply(a2, (1 - a2))))
+    print("d2")
+    print(d2)
     print("")
