@@ -19,9 +19,9 @@ def logreg(x, y, t, a, s):
         h_theta = 0
         for i in range(numcols):
             h_theta += theta[0, i] * myx[row, i]
-        #xx = 1 / (1 + math.exp(-1*h_theta))
-        # return xx
-        return h_theta
+        xx = 1 / (1 + math.exp(-1*h_theta))
+        return xx
+        # return h_theta
 
     def v_calc_h():
         h_theta = myx * theta.T
@@ -29,7 +29,7 @@ def logreg(x, y, t, a, s):
         # return xx
         return h_theta
 
-    somenumber = alpha / numrows
+    learn = alpha / numrows
     while abs(difference[0, 0]) > threshold:
     # for repeats in range(1):
         if s == 0: # Slowest - Basic implementation, no optimizations
@@ -47,7 +47,7 @@ def logreg(x, y, t, a, s):
                 theta_t[0, col] = theta[0, col] - alpha / numrows * temp
         elif s == 2: # Slow (the fastest)
             # theta_t = theta - (alpha / m) * X.T(g(X*theta) - Y)
-            temp = theta.T - somenumber * myx.T * (v_calc_h() - myy)
+            temp = theta.T - learn * myx.T * (v_calc_h() - myy)
             theta_t = temp.T
 
         # Comparison to determine stop condition
