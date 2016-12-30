@@ -4,8 +4,6 @@ def NeuralNet(x, y):
     import numpy
     import numpy.matlib
 
-    # z represents network architecture (no biases)
-    arch = (x.shape[0], 4, 3, y.shape[0])
     alpha = 0.001
 
     # Initialize a matrix of dimensions [mxn]
@@ -44,24 +42,30 @@ def NeuralNet(x, y):
         a = 1 / (1 + numpy.exp(-1 * z))
         return a
 
+    # z represents network architecture (w/o biases)
+    # need to modify third value to not be tied, should be able to handle anything
+    arch = (x.shape[0], 2 * x.shape[0], y.shape[0], y.shape[0])
+
     ### Initialization ###
     # Use an [mxn] matrix to create an [nx(n+1)]
-    theta1 = init_weights(arch[1], x.shape[0] + 1)
+    theta1 = init_weights(arch[1], arch[0] + 1)
     # print("theta1")
     # print(theta1)
     # print("")
 
-    delta1 = numpy.zeros((5, 5))
+    # Same dimensionality as theta1 with an additional row for bias
+    delta1 = numpy.zeros((theta1.shape[0] + 1, theta1.shape[1]))
     # print("delta1")
     # print(delta1)
     # print("")
 
-    theta2 = init_weights(arch[2], 5)
+    theta2 = init_weights(arch[2], arch[1] + 1)
     # print("theta2")
     # print(theta2)
     # print("")
-    
-    delta2 = numpy.zeros((3, 5))
+
+    # Same dimensionality as theta2 without an additional row for bias (last layer)
+    delta2 = numpy.zeros((theta2.shape[0], theta2.shape[1]))
     # print("delta2")
     # print(delta2)
     # print("")
@@ -116,7 +120,7 @@ def NeuralNet(x, y):
             # print("")
 
             # Calculate errors for layer 2
-            d2 = numpy.multiply((theta2.T * d3), (numpy.multiply(a2, (1 - a2))))
+            d2 = numpy.multiply((numpy.dot(theta2.T, d3)), (numpy.multiply(a2, (1 - a2))))
             # print("d2")
             # print(d2)
             # print("")
@@ -161,11 +165,12 @@ def NeuralNet(x, y):
 
         theta1_t = theta1 - alpha * theta1_grad
         # print("theta1")
-        #print(theta1)
+        # print(theta1)
         # print("")
 
         difference1 = abs(theta1 - theta1_t)
-        print(difference1)
+        # print(difference1)
         numpy.copyto(theta1, theta1_t)
 
     print(theta1)
+    print(theta2)
