@@ -4,8 +4,12 @@ def NeuralNet(x, y):
     import numpy
     import numpy.matlib
 
-    myx = x.T
-    myy = y.T
+    myx_o = x.T
+    myy_o = y.T
+
+    # Ensure all inputs between 0 and 1
+    myx = myx_o #/ myx_o.max(axis=1)
+    myy = myy_o #/ myy_o.max(axis=1)
 
     alpha = 0.001
 
@@ -40,8 +44,6 @@ def NeuralNet(x, y):
     def calc_a(z):
         a = z
         # For each row in z, calculate the function g(z)
-        # for i in range(z.shape[0]):
-        #     a[i] = 1 / (1 + math.exp(-1 * z[i]))
         a = 1 / (1 + numpy.exp(-1 * z))
         return a
 
@@ -59,7 +61,7 @@ def NeuralNet(x, y):
     # print("theta2")
     # print(theta2)
 
-    for i in range(10000):
+    for i in range(100):
         # Same dimensionality as theta1 with an additional row for bias
         delta1 = numpy.zeros((theta1.shape[0] + 1, theta1.shape[1]))
         # print("delta1")
@@ -128,7 +130,8 @@ def NeuralNet(x, y):
 
         # outside of 1:m loop
         # theta(x), delta(x), and theta(x)_grad should have same dimensions
-        theta2_grad = delta2 / m
+        theta2_grad = delta2 / m # j = 0
+        # theta2_grad = delta2 / m + lambda * theta2 # j != 0
         # print("theta2_grad")
         # print(theta2_grad)
 
@@ -142,6 +145,10 @@ def NeuralNet(x, y):
         # print("theta2")
         # print(theta2)
 
+        difference2 = abs(theta2 - theta2_t)
+        # print("difference2")
+        # print(difference2)
+
         # print(abs(theta2 - theta2_t))
         numpy.copyto(theta2, theta2_t)
 
@@ -152,6 +159,8 @@ def NeuralNet(x, y):
         # print("theta1")
         # print(theta1)
 
+        difference1 = abs(theta1 - theta1_t)
+        # print(difference1)
         numpy.copyto(theta1, theta1_t)
 
     print("theta1")
@@ -159,11 +168,29 @@ def NeuralNet(x, y):
     print("theta2")
     print(theta2)
 
-    check1 = myx[:, 1]
+    # Check the results by analyzing one training example (in this case 0)
+    check1 = myx[:, 0]
     check1 = append(check1)
     check2 = calc_z(check1, theta1)
     check2 = calc_a(check2)
-    
+    check3 = append(check2)
+    check3 = calc_z(check3, theta2)
+    check3 = calc_a(check3)
+    print(check3)
+
+    check1 = myx[:, 55]
+    check1 = append(check1)
+    check2 = calc_z(check1, theta1)
+    check2 = calc_a(check2)
+    check3 = append(check2)
+    check3 = calc_z(check3, theta2)
+    check3 = calc_a(check3)
+    print(check3)
+
+    check1 = myx[:, 140]
+    check1 = append(check1)
+    check2 = calc_z(check1, theta1)
+    check2 = calc_a(check2)
     check3 = append(check2)
     check3 = calc_z(check3, theta2)
     check3 = calc_a(check3)
