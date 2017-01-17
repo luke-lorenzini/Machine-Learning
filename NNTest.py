@@ -46,6 +46,7 @@ with open(filename, newline='') as csvfile:
 
 # 784 column in mnist train set, 28 x 28
 # filename = r'data\MNIST\mnist_train.csv'
+# filename = r'C:\Users\Luke Lorenzini\Documents\MNIST\mnist_test.csv'
 # with open(filename, newline='') as csvfile:
 #     valuesx = np.matrix(np.loadtxt(csvfile, delimiter=",", usecols=range(1, 785)))
 # with open(filename, newline='') as csvfile:
@@ -59,8 +60,8 @@ if valuesy.shape[0] == 1:
 
 # valuesy = onehot_mnist(valuesy)
 
-valuesx = np.matrix([[0, 0, 1, 1], [0, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]])
-valuesy = np.matrix([[0], [1], [1], [0]])
+# valuesx = np.matrix([[0, 0, 1, 1], [0, 1, 1, 1], [1, 0, 1, 1], [1, 1, 1, 1]])
+# valuesy = np.matrix([[0], [1], [1], [0]])
 
 # valuesx = np.matrix([[2104, 5, 1, 45], [1416, 3, 2, 40], [1534, 3, 2, 30], [852, 2, 1, 36]])
 # valuesy = np.matrix([[460], [232], [315], [178]])
@@ -68,15 +69,16 @@ valuesy = np.matrix([[0], [1], [1], [0]])
 valuesz = valuesx
 
 # TODO Feature Scaling
-# Principle Component Analysis
-valuesz = prince(valuesz)
 # Mean Normalization
 valuesz = meannorm(valuesz)
+# Principle Component Analysis
+valuesz = prince(valuesz)
 
 
 timenow = time()
 t1, t2 = NeuralNet(valuesz, valuesy)
+# NeuralNet()
 print(time() - timenow)
 
-print(t1)
-print(t2)
+# print(t1)
+# print(t2)
