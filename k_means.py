@@ -2,6 +2,7 @@ def kmeans(x, K):
     import math
     import numpy
     import numpy.matlib
+    import sys
 
     myx = x
     # u = numpy.zeros(K)
@@ -9,20 +10,18 @@ def kmeans(x, K):
     c = numpy.zeros(samples)
 
     cent = numpy.matlib.rand(K, myx.shape[1])
-    cent = 10 * numpy.random.random((K - 1, myx.shape[1])) - 1
+    # cent = 10 * numpy.random.random((K - 1, myx.shape[1])) - 1
 
     for total in range(10):
-        zeros = 0
-        ones = 0
-        twos = 0
+        hits = numpy.zeros(K)
 
         # Cluster assignment
         # c[i] contains information about the cluster which example belongs
         for	i in range(samples):
             # Set to something big
-            zzz = 100000000000
+            zzz = sys.maxsize
             # Calculate scalar between sample[i] and centroid[k]
-            for k in range(K - 1):
+            for k in range(K):
                 # sqrt((x2-x1)^2 + (y2-y1)^2)
                 mysum = 0
                 for cols in range(myx.shape[1]):
@@ -33,49 +32,26 @@ def kmeans(x, K):
                     # Flag the smallest distance for comparison
                     zzz = dist
                     x = k
-            if x == 0:
-                zeros += 1
-            elif x == 1:
-                ones += 1
-            elif x == 2:
-                twos += 1
+            for k in range(K):
+                if x == k:
+                    hits[k] += 1
             # Calculate distance from point i
             # c_i :=	index	 (from	1	to	K)	of	cluster	 centroid	 closest	to	x_i
             c[i] = x
 
         # Move centroid
-        for k in range(K - 1):
+        for k in range(K):
             # u_k :=	average	(mean)	of	points	assigned	to	 cluster	k
-            aaa = 0
-            bbb = 0
-            ccc = 0
-            ddd = 0
+            sums = numpy.zeros(myx.shape[1])
+
             for	i in range(samples):
                 if k == c[i]:
-                    aaa += myx[i, 0]
-                    bbb += myx[i, 1]
-                    ccc += myx[i, 2]
-                    ddd += myx[i, 3]
-            if (k == 0) & (zeros != 0):
-                aaa = aaa / zeros
-                bbb = bbb / zeros
-                ccc = ccc / zeros
-                ddd = ddd / zeros
-            elif (k == 1) & (ones != 0):
-                aaa = aaa / ones
-                bbb = bbb / ones
-                ccc = ccc / ones
-                ddd = ddd / ones
-            elif (k == 2) & (twos != 0):
-                aaa = aaa / twos
-                bbb = bbb / twos
-                ccc = ccc / twos
-                ddd = ddd / twos
+                    for cols in range(myx.shape[1]):
+                        sums[cols] += myx[i, cols]
+            if hits[k] != 0:
+                sums /= hits[k]
             # Update the centroid matrix
-            cent[k, 0] = aaa
-            cent[k, 1] = bbb
-            cent[k, 2] = ccc
-            cent[k, 3] = ddd
+            cent[k, ] = sums
 
         # print(cent)
     print(c)
