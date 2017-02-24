@@ -22,5 +22,6 @@ def prince(x):
     # Get submatrix of size [mxi]
     U_res = U[:, :k]
     z = x * U_res
+    print(k)
 
     return z
