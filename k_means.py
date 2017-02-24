@@ -2,6 +2,7 @@ def kmeans(x, K):
     import math
     import numpy
     import numpy.matlib
+    from time import time
     import sys
 
     myx = x
@@ -12,7 +13,8 @@ def kmeans(x, K):
     cent = numpy.matlib.rand(K, myx.shape[1])
     # cent = 10 * numpy.random.random((K - 1, myx.shape[1])) - 1
 
-    for total in range(10):
+    for total in range(50):
+        # print(total)
         hits = numpy.zeros(K)
 
         # Cluster assignment
@@ -23,18 +25,25 @@ def kmeans(x, K):
             # Calculate scalar between sample[i] and centroid[k]
             for k in range(K):
                 # sqrt((x2-x1)^2 + (y2-y1)^2)
-                mysum = 0
-                for cols in range(myx.shape[1]):
-                    mysum += (myx[i, cols] - cent[k, cols]) ** 2
+                # step 1, subtract row k from row i for each col
+                # step 2, square each result from step 1
+                # step 3, sum the entire row
+                # timenow = time()
+                step1 = numpy.subtract(myx[i, :], cent[k, :])
+                step2 = numpy.square(step1)
+                step3 = numpy.sum(step2, axis=1)
+                mysum = step3
+                # mysum = 0
+                # for cols in range(myx.shape[1]):
+                #     mysum += (myx[i, cols] - cent[k, cols]) ** 2
                 dist = math.sqrt(mysum)
+                # print(time() - timenow)
                 # print(dist)
                 if dist < zzz:
                     # Flag the smallest distance for comparison
                     zzz = dist
                     x = k
-            for k in range(K):
-                if x == k:
-                    hits[k] += 1
+            hits[x] += 1
             # Calculate distance from point i
             # c_i :=	index	 (from	1	to	K)	of	cluster	 centroid	 closest	to	x_i
             c[i] = x
@@ -55,3 +64,4 @@ def kmeans(x, K):
 
         # print(cent)
     print(c)
+    return numpy.matrix(c).T
