@@ -2,8 +2,12 @@ def logreg(x, y, t, a, s):
     import math
     import numpy as np
 
-    myx = x
-    myy = y
+    myx_o = x
+    myy_o = y
+
+    myx = myx_o / myx_o.max(axis=0)
+    myy = myy_o / myy_o.max(axis=0)
+
     theta = t
     alpha = a
     threshold = 0.000001
@@ -19,19 +23,18 @@ def logreg(x, y, t, a, s):
         h_theta = 0
         for i in range(numcols):
             h_theta += theta[0, i] * myx[row, i]
-        xx = 1 / (1 + math.exp(-1*h_theta))
+        xx = 1 / (1 + math.exp(-1 * h_theta))
         return xx
         # return h_theta
 
     def v_calc_h():
         h_theta = myx * theta.T
-        #xx = 1 / (1 + math.exp(-1*h_theta))
-        # return xx
-        return h_theta
+        xx = 1 / (1 + np.exp(-1 * h_theta))
+        return xx
 
     learn = alpha / numrows
-    while abs(difference[0, 0]) > threshold:
-    # for repeats in range(1):
+    # while abs(difference[0, 0]) > threshold:
+    for repeats in range(10000):
         if s == 0: # Slowest - Basic implementation, no optimizations
             for col in range(numcols):
                 temp = 0
@@ -55,6 +58,10 @@ def logreg(x, y, t, a, s):
 
         # Update the values for theta
         np.copyto(theta, theta_t)
-        print(theta)
+        # print(theta)
+    
+    check = myx * theta.T
+    result = 1 / (1 + np.exp(-1 * check))
+    print(result)
 
     return theta
