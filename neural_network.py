@@ -12,7 +12,7 @@ def NeuralNet(x, y):
     # mode = 1, vectorized batch gradient descent
     # mode = 2, stochastic gradient descent
     # mode = 3, mini-batch gradient descent
-    mode = 2
+    mode = 3
 
     # Modify learning rate, alpha
     alpha = 1
@@ -35,7 +35,9 @@ def NeuralNet(x, y):
     epochs = 100
     samples = myx.shape[1]
     lamb = 0.001
+    # 0 = no bias on layers, 1 = one bias layer
     bias = 0
+    batchsize = 100
 
     # arch represents network architecture (w/o biases)
     arch = (myx.shape[0], 2 * myx.shape[0], 2 * myy.shape[0], myy.shape[0])
@@ -97,6 +99,7 @@ def NeuralNet(x, y):
     for i in range(epochs):
         alpha = calc_alpha(i, const1, const2)
         if mode == 0: # batch gradient descent
+            # Run forward and back prop on each sample, then update
             for j in range(samples):
                 # Setup input / output data
                 in_mat = myx[:, j]
@@ -115,6 +118,7 @@ def NeuralNet(x, y):
             theta2 -= alpha * (d2_delta / samples + (lamb * theta2))
 
         elif mode == 1: # vectorized batch gradient descent
+            # Calculate the whole shebang
             # Setup input / output data
             in_mat = myx
             out_mat = myy
@@ -132,6 +136,7 @@ def NeuralNet(x, y):
             theta2 -= alpha * (d2_delta / samples + (lamb * theta2))
 
         elif mode == 2: # stochastic gradient descent
+            # Update for each sample
             for j in range(samples):
                 # Setup input / output data
                 in_mat = myx[:, j]
@@ -149,8 +154,8 @@ def NeuralNet(x, y):
                 theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
                 theta2 -= alpha * (d2_delta / samples + (lamb * theta2))
         elif mode == 3: # mini-batch gradient descent
+            # Process 'mini-batch' number of samples, then update
             for j in range(samples):
-                # Need to send a sub matrix of the entire set, e.g. 1-100, 101-200, 201-300
                 # Setup input / output data
                 in_mat = myx[:, j]
                 out_mat = myy[:, j]
@@ -164,6 +169,11 @@ def NeuralNet(x, y):
                 d2_delta += numpy.dot(d3_error, actvtn2.T)
                 d1_delta += numpy.dot(d2_error, actvtn1.T)
 
+                if (j % batchsize == 0) & (j != 0):
+                    theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
+                    theta2 -= alpha * (d2_delta / samples + (lamb * theta2))
+
+            # Update one final time to account for the remaining samples
             theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
             theta2 -= alpha * (d2_delta / samples + (lamb * theta2))
 
