@@ -3,10 +3,10 @@ def NeuralNet(x, y):
     import numpy.matlib
     from helpers import init_weights
     from helpers import append
+    from helpers import calc_alpha
     from helpers import calc_z
     from helpers import sigmoid
     from helpers import sigmoid_prime
-    from helpers import calc_alpha
 
     # mode = 0, batch gradient descent
     # mode = 1, vectorized batch gradient descent
