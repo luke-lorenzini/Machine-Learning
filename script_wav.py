@@ -1,18 +1,18 @@
 # A Script to test concepts
 from time import time
 import numpy as np
-from  PCA import prince
-from mean_normalization import meannorm
+from ML.PCA import prince
+from ML.mean_normalization import meannorm
 # from NNet import NeuralNet
-from neural_network import NeuralNet
+from ML.neural_network import NeuralNet
 from scipy import misc
 import wave
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft
 
 # Read a wav file, convert it to L & R channels
-filename = r'data\sound\wavTones.com.unregistred.sin_1000Hz_-6dBFS_3s.wav'
-filename = r'data\sound\folk.wav'
+filename = r'Machine-Learning\Test Data\sound\wavTones.com.unregistred.sin_1000Hz_-6dBFS_3s.wav'
+# filename = r'Machine-Learning\Test Data\sound\folk.wav'
 ff = wave.open(filename, 'rb')
 print(ff.getparams())
 valuesx = np.zeros((ff.getnframes(), ff.getnchannels()))
@@ -36,12 +36,10 @@ for x in range(ff.getnframes()):
         # if temp0 > 0x7fff:
         #     temp0 -= 2**16
         valuesx[x] = np.int16(temp0)
-        # valuesx[x] = 0xff - valuesx[x]
-        # print(valuesx[x])
 
-# One period = periods * sample rate / frequency, sample file, 1kH --> 2 * 44,100 / 1000 
-# plt.plot(valuesx)
-# plt.show()
+# One period = periods * sample rate / frequency, sample file, 1kHz --> 2 * 44,100 / 1000 
+plt.plot(valuesx)
+plt.show()
 
 # valuesx = np.fft.fft(valuesx)
 # d = len(c)/2

@@ -1,13 +1,13 @@
 # A Script to test concepts
 from time import time
 import numpy as np
-from  PCA import prince
-from mean_normalization import meannorm
-from neural_network import NeuralNet
-from k_means import kmeans
-from one_hot import one_hot
+from ML.PCA import prince
+from ML.mean_normalization import meannorm
+from ML.neural_network import NeuralNet
+from ML.k_means import kmeans
+from ML.one_hot import one_hot
 
-filename = r'data\iris\irisNN.csv'
+filename = r'Machine-Learning\Test Data\iris\irisNN.csv'
 with open(filename, newline='') as csvfile:
     valuesx = np.matrix(np.loadtxt(csvfile, delimiter=",", usecols=(0, 1, 2, 3)))
 with open(filename, newline='') as csvfile:

@@ -8,6 +8,8 @@ def NeuralNet(x, y):
     numpy.random.seed(1)
 
     epochs = 10000
+    lamb = 0.001
+    myBias = 0
 
     myx = x.T
     myy = y.T
@@ -50,10 +52,10 @@ def NeuralNet(x, y):
         a = 1 / (1 + numpy.exp(-1 * z))
         return a
 
-    # def sigmoid_prime(z):
-    #     a = z
-    #     a = numpy.multiply(z, (1 - z))
-    #     return a
+    def sigmoid_prime(z):
+        a = z
+        a = numpy.multiply(z, (1 - z))
+        return a
 
     def nonlin(x, deriv=False):
         if deriv:
@@ -63,17 +65,17 @@ def NeuralNet(x, y):
 
     # z represents network architecture (w/o biases)
     # need to modify third value to not be tied, should be able to handle anything
-    arch = (myx.shape[0], 1 * myx.shape[0], myy.shape[0], myy.shape[0])
+    arch = (myx.shape[0], 1 * myx.shape[0], 1 * myy.shape[0], myy.shape[0])
 
     ### Initialization ###
     # Use an [mxn] matrix to create an [nx(n+1)]
     # theta1 = init_weights(arch[1], arch[0] + 1)
-    theta1 = init_weights(arch[1] + 1, arch[0])
+    theta1 = init_weights(arch[1] + 1, arch[0] + myBias)
     # print("theta1")
     # print(theta1)
 
     # theta2 = init_weights(arch[2], arch[1] + 1)
-    theta2 = init_weights(arch[3], arch[1] + 1)
+    theta2 = init_weights(arch[3], arch[1] + 1 + myBias)
     # print(theta2)
 
     # test_theta1 = init_weights(3, 4)
@@ -86,8 +88,8 @@ def NeuralNet(x, y):
         # Each column represents a training example
         ### Forward Propogation ###
         # Step 1, append the bias
-        # a1 = append(myx)
         a1 = myx
+        # a1 = append(myx)
         test_a1 = test_myx
         # print("a1")
         # print(a1)
@@ -130,9 +132,12 @@ def NeuralNet(x, y):
             print(100 * numpy.mean(numpy.abs(d3_error)))
             print(100 * numpy.mean(numpy.abs(test_d3_error)))
 
-        d3_delta_a = (1 - a3)
-        d3_delta_b = numpy.multiply(a3, d3_delta_a)
-        d3_delta = numpy.multiply(d3_error, d3_delta_b)
+        # d3_delta_a = (1 - a3)
+        # d3_delta_b = numpy.multiply(a3, d3_delta_a)
+        # d3_delta_c = numpy.multiply(d3_error, d3_delta_b)
+        #print(d3_delta_c)
+        d3_delta = numpy.multiply(d3_error, sigmoid_prime(a3))
+        # print(d3_delta - d3_delta_c)
         test_d3_delta = numpy.multiply(test_d3_error, nonlin(test_a3_a, deriv=True))
 
         # Calculate errors for layer 2
@@ -141,19 +146,22 @@ def NeuralNet(x, y):
         # print("d2")
         # print(d2)
 
-        d2_delta_a = (1 - a2)
-        d2_delta_b = numpy.multiply(a2, d2_delta_a)
-        d2_delta = numpy.multiply(d2_error, d2_delta_b)
+        # d2_delta_a = (1 - a2)
+        # d2_delta_b = numpy.multiply(a2, d2_delta_a)
+        # d2_delta_c = numpy.multiply(d2_error, d2_delta_b)
+        d2_delta = numpy.multiply(d2_error, sigmoid_prime(a2))
+        # print(d2_delta - d2_delta_c)
         test_d2_delta = numpy.multiply(test_d2_error, nonlin(test_a2_a, deriv=True))
 
         # delta(l) = delta(l) + d(l+1)*a(l).T
         # delta2 += numpy.dot(d3_error, a2.T)
-        theta2 += numpy.dot(d3_delta, a2.T)     
+        theta2 += (numpy.dot(d3_delta, a2.T) + lamb * theta2)
         test_theta2 += test_a2_a.T.dot(test_d3_delta)
         # print("delta2")
         # print(delta2)
 
-        theta1 += numpy.dot(d2_delta, a1.T)
+        # d2_delta = numpy.delete(d2_delta, 0, 0)
+        theta1 += (numpy.dot(d2_delta, a1.T) + lamb * theta1)
         test_theta1 += test_a1.T.dot(test_d2_delta)
         # print("delta1")
         # print(delta1)

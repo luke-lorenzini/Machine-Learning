@@ -1,35 +1,35 @@
 # A Script to test concepts
 from time import time
 import numpy as np
-from  PCA import prince
-from mean_normalization import meannorm
-from neural_network import NeuralNet
+from ML.PCA import prince
+from ML.mean_normalization import meannorm
+from ML.neural_network import NeuralNet
 from scipy import misc
-from k_means import kmeans
-from one_hot import one_hot
+from ML.k_means import kmeans
+from ML.one_hot import one_hot
 
 # 784 column in mnist train set, 28 x 28
-filename = r'data\MNIST\mnist_test.csv'
+filename = r'Machine-Learning\Test Data\MNIST\mnist_test.csv'
 with open(filename, newline='') as csvfile:
     valuesx = np.matrix(np.loadtxt(csvfile, delimiter=",", usecols=range(1, 785)))
-# with open(filename, newline='') as csvfile:
-#     valuesy = np.matrix(np.loadtxt(csvfile, delimiter=",", usecols=(0,)))
+with open(filename, newline='') as csvfile:
+    valuesy = np.matrix(np.loadtxt(csvfile, delimiter=",", usecols=(0,)))
 
-# # Transpose vector from [1xn] to [mx1]
-# valuesy = valuesy.T
+# Transpose vector from [1xn] to [mx1]
+valuesy = valuesy.T
 
-# # Convert from interger to one hot arrays
-# valuesy = one_hot(valuesy, 10)
+# Convert from interger to one hot arrays
+valuesy = one_hot(valuesy, 10)
 
 valuesz = valuesx
 
-valuesz = prince(valuesz)
-valuesz = meannorm(valuesz)
+# valuesz = prince(valuesz)
+# valuesz = meannorm(valuesz)
 
-clusters = 10
-timenow = time()
-valuesy = one_hot(kmeans(valuesz, clusters), clusters)
-print(time() - timenow)
+# clusters = 10
+# timenow = time()
+# valuesy = one_hot(kmeans(valuesz, clusters), clusters)
+# print(time() - timenow)
 
 timenow = time()
 t1, t2 = NeuralNet(valuesz, valuesy)
