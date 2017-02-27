@@ -13,7 +13,7 @@ def kmeans(x, K):
     cent = numpy.matlib.rand(K, myx.shape[1])
     # cent = 10 * numpy.random.random((K - 1, myx.shape[1])) - 1
 
-    for total in range(50):
+    for total in range(10):
         # print(total)
         hits = numpy.zeros(K)
 
