@@ -12,7 +12,7 @@ def NeuralNet(x, y):
     # mode = 1, vectorized batch gradient descent
     # mode = 2, stochastic gradient descent
     # mode = 3, mini-batch gradient descent
-    mode = 3
+    mode = 2
 
     # Modify learning rate, alpha
     alpha = 1
@@ -99,10 +99,10 @@ def NeuralNet(x, y):
 
         return d1_error, d2_error, d3_error
 
-    # for i in range(epochs):
-    i = 0
-    while (i < epochs) | (error < 1E-5):
-        i += 1
+    for i in range(epochs):
+    # i = 0
+    # while (i < epochs) | (error < 1E-5):
+    #     i += 1
         alpha = calc_alpha(i, const1, const2)
         if mode == 0: # batch gradient descent
             # Run forward and back prop on each sample, then update
