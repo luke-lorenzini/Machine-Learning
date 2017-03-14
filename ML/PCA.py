@@ -1,5 +1,5 @@
 # Principal Component Analysis
-def prince(x):
+def prince(x, rate):
     import numpy
 
     sigma = numpy.dot(x.T, x)
@@ -8,13 +8,15 @@ def prince(x):
 
     U, s, V = numpy.linalg.svd(sigma)
 
+    myRate = rate / 100
+
     # Sum the "s" matrix
     s_tot = numpy.sum(s)
 
     k_tot = 0
     k = 0
     result = 0
-    while result < 0.99:
+    while result < myRate:
         k_tot += numpy.sum(s[k])
         result = k_tot / s_tot
         k += 1
