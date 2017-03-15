@@ -12,7 +12,7 @@ def NeuralNet(x, y):
     # mode = 1, vectorized batch gradient descent
     # mode = 2, stochastic gradient descent
     # mode = 3, mini-batch gradient descent
-    mode = 2
+    mode = 3
 
     # Modify learning rate, alpha
     alpha = 1
@@ -32,7 +32,7 @@ def NeuralNet(x, y):
     myx = x.T
     myy = y.T
 
-    epochs = 100
+    epochs = 1
     samples = myx.shape[1]
     lamb = 0.001
     # 0 = no bias on layers, 1 = one bias layer
@@ -47,37 +47,42 @@ def NeuralNet(x, y):
     ### Initialization ###
     # Use an [mxn] matrix to create an [nx(n+1)]
     theta1 = init_weights(arch[1], arch[0] + bias)
-    theta2 = init_weights(arch[3], arch[1] + bias)
+    thetax = init_weights(arch[len(arch) - 1], arch[1] + bias)
 
     d1_delta = numpy.zeros((theta1.shape[0], theta1.shape[1]))
-    d2_delta = numpy.zeros((theta2.shape[0], theta2.shape[1]))
+    dx_delta = numpy.zeros((thetax.shape[0], thetax.shape[1]))
 
-    def fwd_prop(mat):
+    def fwd_prop(mat, theta):
         """Forward Propogation"""
         # Each column represents a training example
-        # Step 1, append the bias
-        act1 = mat
-        if bias > 0:
-            act1 = append(act1)
 
         # Step 2, calculate z
-        z1 = calc_z(act1, theta1)
+        z = calc_z(mat, theta)
 
         # Step 3, transform z
-        act2 = sigmoid(z1)
+        act = sigmoid(z)
 
-        # Second layer
-        # Step 1, append the bias
+        return act
+
+    def back_propn(j, i, mat, act1, act2, act3):
+        """ Back Propogation"""
+        # Calculate errors for layer 3
+        # d3_error = act3 - myy[:, j]
+        d3_error = act3 - mat
+
+        if (i % (epochs / 10)) == 0:
+            if j == 0:
+                error = numpy.mean(numpy.abs(d3_error))
+                print(100 * numpy.mean(numpy.abs(d3_error)))
+
+        d2_error = numpy.multiply(numpy.dot(thetax.T, d3_error), sigmoid_prime(act2))
+
+        # Calculate errors for layer 2
         if bias > 0:
-            act2 = append(act2)
+            d2_error = numpy.delete(d2_error, 0, 0)
+        d1_error = numpy.multiply(numpy.dot(theta1.T, d2_error), sigmoid_prime(act1))
 
-        # Step 2, calculate z
-        z2 = calc_z(act2, theta2)
-
-        # Step 3, transform z
-        act3 = sigmoid(z2)
-
-        return act1, act2, act3
+        return d1_error, d2_error, d3_error
 
     def back_prop(j, i, mat, act1, act2, act3):
         """ Back Propogation"""
@@ -90,7 +95,7 @@ def NeuralNet(x, y):
                 error = numpy.mean(numpy.abs(d3_error))
                 print(100 * numpy.mean(numpy.abs(d3_error)))
 
-        d2_error = numpy.multiply(numpy.dot(theta2.T, d3_error), sigmoid_prime(act2))
+        d2_error = numpy.multiply(numpy.dot(thetax.T, d3_error), sigmoid_prime(act2))
 
         # Calculate errors for layer 2
         if bias > 0:
@@ -112,16 +117,24 @@ def NeuralNet(x, y):
                 out_mat = myy[:, j]
 
                 # Forward Propogation
-                actvtn1, actvtn2, actvtn3 = fwd_prop(in_mat)
+                actvtn1 = in_mat
+                if bias > 0:
+                    actvtn1 = append(actvtn1)
+
+                actvtn2 = fwd_prop(actvtn1, theta1)
+                if bias > 0:
+                    actvtn2 = append(actvtn2)
+
+                actvtn3 = fwd_prop(actvtn2, thetax)
 
                 # Back Propogation
                 d1_error, d2_error, d3_error = back_prop(j, i, out_mat, actvtn1, actvtn2, actvtn3)
 
-                d2_delta += numpy.dot(d3_error, actvtn2.T)
+                dx_delta += numpy.dot(d3_error, actvtn2.T)
                 d1_delta += numpy.dot(d2_error, actvtn1.T)
 
             theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
-            theta2 -= alpha * (d2_delta / samples + (lamb * theta2))
+            thetax -= alpha * (dx_delta / samples + (lamb * thetax))
 
         elif mode == 1: # vectorized batch gradient descent
             # Calculate the whole shebang
@@ -130,16 +143,24 @@ def NeuralNet(x, y):
             out_mat = myy
 
             # Forward Propogation
-            actvtn1, actvtn2, actvtn3 = fwd_prop(in_mat)
+            actvtn1 = in_mat
+            if bias > 0:
+                actvtn1 = append(actvtn1)
+
+            actvtn2 = fwd_prop(actvtn1, theta1)
+            if bias > 0:
+                actvtn2 = append(actvtn2)
+
+            actvtn3 = fwd_prop(actvtn2, thetax)
 
             # Back Propogation
             d1_error, d2_error, d3_error = back_prop(0, i, out_mat, actvtn1, actvtn2, actvtn3)
 
-            d2_delta += numpy.dot(d3_error, actvtn2.T)
+            dx_delta += numpy.dot(d3_error, actvtn2.T)
             d1_delta += numpy.dot(d2_error, actvtn1.T)
 
             theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
-            theta2 -= alpha * (d2_delta / samples + (lamb * theta2))
+            thetax -= alpha * (dx_delta / samples + (lamb * thetax))
 
         elif mode == 2: # stochastic gradient descent
             # Update for each sample
@@ -149,16 +170,24 @@ def NeuralNet(x, y):
                 out_mat = myy[:, j]
 
                 # Forward Propogation
-                actvtn1, actvtn2, actvtn3 = fwd_prop(in_mat)
+                actvtn1 = in_mat
+                if bias > 0:
+                    actvtn1 = append(actvtn1)
+
+                actvtn2 = fwd_prop(actvtn1, theta1)
+                if bias > 0:
+                    actvtn2 = append(actvtn2)
+
+                actvtn3 = fwd_prop(actvtn2, thetax)
 
                 # Back Propogation
                 d1_error, d2_error, d3_error = back_prop(j, i, out_mat, actvtn1, actvtn2, actvtn3)
 
-                d2_delta += numpy.dot(d3_error, actvtn2.T)
+                dx_delta += numpy.dot(d3_error, actvtn2.T)
                 d1_delta += numpy.dot(d2_error, actvtn1.T)
 
                 theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
-                theta2 -= alpha * (d2_delta / samples + (lamb * theta2))
+                thetax -= alpha * (dx_delta / samples + (lamb * thetax))
         elif mode == 3: # mini-batch gradient descent
             # Process 'mini-batch' number of samples, then update
             for j in range(samples):
@@ -167,21 +196,29 @@ def NeuralNet(x, y):
                 out_mat = myy[:, j]
 
                 # Forward Propogation
-                actvtn1, actvtn2, actvtn3 = fwd_prop(in_mat)
+                actvtn1 = in_mat
+                if bias > 0:
+                    actvtn1 = append(actvtn1)
+
+                actvtn2 = fwd_prop(actvtn1, theta1)
+                if bias > 0:
+                    actvtn2 = append(actvtn2)
+
+                actvtn3 = fwd_prop(actvtn2, thetax)
 
                 # Back Propogation
                 d1_error, d2_error, d3_error = back_prop(j, i, out_mat, actvtn1, actvtn2, actvtn3)
 
-                d2_delta += numpy.dot(d3_error, actvtn2.T)
+                dx_delta += numpy.dot(d3_error, actvtn2.T)
                 d1_delta += numpy.dot(d2_error, actvtn1.T)
 
                 if (j % batchsize == 0) & (j != 0):
                     theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
-                    theta2 -= alpha * (d2_delta / samples + (lamb * theta2))
+                    thetax -= alpha * (dx_delta / samples + (lamb * thetax))
 
             # Update one final time to account for the remaining samples
             theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
-            theta2 -= alpha * (d2_delta / samples + (lamb * theta2))
+            thetax -= alpha * (dx_delta / samples + (lamb * thetax))
 
     # Check the results by analyzing one training example (in this case 0)
     check1 = myx
@@ -191,8 +228,8 @@ def NeuralNet(x, y):
     check3 = sigmoid(check2)
     if bias > 0:
         check3 = append(check3)
-    check3 = calc_z(check3, theta2)
+    check3 = calc_z(check3, thetax)
     check4 = sigmoid(check3)
     print(numpy.round(100 * check4))
 
-    return theta1, theta2
+    return theta1, thetax
