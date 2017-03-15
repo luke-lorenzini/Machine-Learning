@@ -8,8 +8,11 @@ from scipy import misc
 from ML.k_means import kmeans
 from ML.one_hot import one_hot
 
+# The compression rate for PCA
+rate = 99
+
 # 784 column in mnist train set, 28 x 28
-filename = r'Machine-Learning\Test Data\MNIST\mnist_test.csv'
+filename = r'C:\Users\Luke Lorenzini\OneDrive\Visual Studio\Python\Machine-Learning\Test-Data\MNIST\mnist_train.csv'
 with open(filename, newline='') as csvfile:
     valuesx = np.matrix(np.loadtxt(csvfile, delimiter=",", usecols=range(1, 785)))
 with open(filename, newline='') as csvfile:
@@ -23,7 +26,7 @@ valuesy = one_hot(valuesy, 10)
 
 valuesz = valuesx
 
-# valuesz = prince(valuesz)
+# valuesz = prince(valuesz, rate)
 # valuesz = meannorm(valuesz)
 
 # clusters = 10
@@ -35,8 +38,8 @@ timenow = time()
 t1, t2 = NeuralNet(valuesz, valuesy)
 print(time() - timenow)
 
-np.savetxt("theta1.csv", t1, delimiter=",")
-np.savetxt("theta2.csv", t2, delimiter=",")
+# np.savetxt("theta1.csv", t1, delimiter=",")
+# np.savetxt("theta2.csv", t2, delimiter=",")
 
 zero = np.matrix([[1], [0], [0], [0], [0], [0], [0], [0], [0], [0]])
 first = t2.T * zero
