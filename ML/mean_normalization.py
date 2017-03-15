@@ -7,6 +7,6 @@ def meannorm(x):
     c = numpy.std(a, axis=0)
 
     # myx = x / x.max(axis=0)
-    myx = (a - b) / c
+    myx = (a - b) / (c + 0.00000001)
 
     return myx
