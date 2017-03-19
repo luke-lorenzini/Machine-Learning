@@ -12,7 +12,7 @@ from ML.one_hot import one_hot
 rate = 99
 
 # 784 column in mnist train set, 28 x 28
-filename = r'C:\Users\Luke Lorenzini\OneDrive\Visual Studio\Python\Machine-Learning\Test-Data\MNIST\mnist_train.csv'
+filename = r'..\Machine-Learning\Test-Data\MNIST\mnist_test.csv'
 with open(filename, newline='') as csvfile:
     valuesx = np.matrix(np.loadtxt(csvfile, delimiter=",", usecols=range(1, 785)))
 with open(filename, newline='') as csvfile:

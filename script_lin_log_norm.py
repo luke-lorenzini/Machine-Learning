@@ -4,7 +4,7 @@ from linear_regression import linreg
 from logistic_regression import logreg
 from normal import norm
 
-filename = r'Machine-Learning\Test Data\iris\Iris-versicolor.csv'
+filename = r'..\Machine-Learning\Test Data\iris\Iris-versicolor.csv'
 
 #myx = np.matrix([[0], [1], [2], [3]])
 #myy = np.matrix([[1], [3], [5], [7]])

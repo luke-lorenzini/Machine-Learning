@@ -9,7 +9,7 @@ from ML.k_means import kmeans
 # The compression rate for PCA
 rate = 99
 
-filename = r'C:\Users\Luke Lorenzini\OneDrive\Visual Studio\Python\Machine-Learning\Test-Data\banknote\banknote.csv'
+filename = r'..\Machine-Learning\Test-Data\banknote\banknote.csv'
 with open(filename, newline='') as csvfile:
     valuesx = np.matrix(np.loadtxt(csvfile, delimiter=",", skiprows=1, usecols=(0, 1, 2, 3)))
 with open(filename, newline='') as csvfile:
