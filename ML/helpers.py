@@ -30,15 +30,39 @@ def calc_z(a, theta):
 # g(z) = 1/(1+e^(-z))
 # input: z = [nx1]
 # output a = [1x1]
-def sigmoid(z):
+def sig(z, prime=False):
     a = z
-    # For each row in z, calculate the function g(z)
-    a = 1 / (1 + numpy.exp(-1 * z))
+    if prime:
+        a = numpy.multiply(z, (1 - z))
+    else:
+        # For each row in z, calculate the function g(z)
+        a = 1 / (1 + numpy.exp(-1 * z))
     return a
 
-def sigmoid_prime(z):
+#https://en.wikipedia.org/wiki/Activation_function
+def tanh(z, prime=False):
     a = z
-    a = numpy.multiply(z, (1 - z))
+    if prime:
+        a = 1 - numpy.multiply(z, z)
+    else:
+        # For each row in z, calculate the function g(z)
+        a = 2 / (1 + numpy.exp(-2 * z)) - 1
+    return a
+
+def relu(z, prime=False):
+    a = z
+    if prime:
+        a = 1
+    else:
+        a = 1
+    return a
+
+def softmax(z, prime=False):
+    a = z
+    if prime:
+        a = 1
+    else:
+        a = 1
     return a
 
 def calc_alpha(i, const1, const2):
