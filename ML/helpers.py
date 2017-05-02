@@ -58,11 +58,12 @@ def relu(z, prime=False):
     return a
 
 def softmax(z, prime=False):
-    a = z
+    # Not yet implemented, just a placeholder
+    # a = z
     if prime:
-        a = 1
+        a = z
     else:
-        a = 1
+        a = z
     return a
 
 def calc_alpha(i, const1, const2):
