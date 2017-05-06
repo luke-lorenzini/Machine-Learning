@@ -35,6 +35,16 @@ def RNN():
     Uh = np.zeros((hidden, words))
     Wh = np.zeros((hidden, hidden))
 
+    # For LSTM
+    Ui = np.zeros((hidden, words))
+    Wi = np.zeros((hidden, hidden))
+    Uf = np.zeros((hidden, words))
+    Wf = np.zeros((hidden, hidden))
+    Uo = np.zeros((hidden, words))
+    Wo = np.zeros((hidden, hidden))
+    Ug = np.zeros((hidden, words))
+    Wg = np.zeros((hidden, hidden))
+
     V = np.zeros((words, hidden))
 
     dldU = np.zeros(Uz.shape)
@@ -59,22 +69,32 @@ def RNN():
         h = tanh(np.dot(Uh, x_t1) + np.dot(Wh, np.multiply(s_t0, r)))
         s_t1 = np.multiply((1 - z), h) + np.multiply(z, s_t0)
         o_t1 = softmax(np.dot(V, s_t1))
-        # o_t1 = softmax(numpy.dot(V, s_t1))
         return o_t1, s_t1
 
-    def LSTM(x_t1, s_t0):
+    def LSTM(x_t1, s_t0, c_t0):
         # LSTM
+        # g = tanh(x_t U^g + s_(t-1) W^g)   # candidate
         # i = sig(x_t U^i + s_(t-1) W^i)    # input
         # f = sig(x_t U^f + s_(t-1) W^f)    # forget
         # o = sig(x_t U^o + s_(t-1) W^o)    # output
-        # g = tanh(x_t U^g + s_(t-1) W^g)   # candidate
         # c_t = c_(t-1) ELEMENT_WISE_MULT f + g ELEMENT_WISE_MULT i # internal memory
         # s_t = tanh(c_t) ELEMENT_WISE_MULT o
-        s_t1 = 1
-        o_t1 = 1
-        return o_t1, s_t1
+        g = tanh(np.dot(Ug, x_t1) + np.dot(Wg, s_t0))
+        i = sig(np.dot(Ui, x_t1) + np.dot(Wi, s_t0))
+        f = sig(np.dot(Uf, x_t1) + np.dot(Wf, s_t0))
+        o = sig(np.dot(Uo, x_t1) + np.dot(Wo, s_t0))
+        c_t1 = np.multiply(c_t0, f) + np.multiply(g, i)
+        s_t1 = np.multiply(tanh(c_t1), o)
+        o_t1 = softmax(np.dot(V, s_t1))
+        return o_t1, s_t1, c_t1
+
+    for i in range(steps):
+        o_t[i+1], s_t[i+1] = Vanilla(x_t[i+1], s_t[i])
 
     for i in range(steps):
         o_t[i+1], s_t[i+1] = GRU(x_t[i+1], s_t[i])
+
+    for i in range(steps):
+        o_t[i+1], s_t[i+1] = LSTM(x_t[i+1], s_t[i])
 
     return o_t, s_t
