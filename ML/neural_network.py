@@ -2,7 +2,6 @@ def NeuralNet(x, y):
     import numpy
     import numpy.matlib
     from ML.helpers import init_weights
-    from ML.helpers import append
     from ML.helpers import calc_alpha
     from ML.helpers import calc_z
     from ML.helpers import sig
@@ -11,7 +10,7 @@ def NeuralNet(x, y):
     # mode = 1, vectorized batch gradient descent
     # mode = 2, stochastic gradient descent
     # mode = 3, mini-batch gradient descent
-    mode = 2
+    mode = 1
 
     # Modify learning rate, alpha
     alpha = 1
@@ -38,7 +37,7 @@ def NeuralNet(x, y):
 
     error = 1
 
-    # arch represents network architecture (w/o biases)
+    # arch represents network architecture
     arch = (myx.shape[0], 2 * myx.shape[0], 2 * myy.shape[0], myy.shape[0])
 
     ### Initialization ###
@@ -95,11 +94,17 @@ def NeuralNet(x, y):
 
                 calc_err(i, j, d3_error)
 
-                d2_error = back_prop(actvtn2, thetax, d3_error)
-                d1_error = back_prop(actvtn1, theta1, d2_error)
+                # d2_error = back_prop(actvtn2, thetax, d3_error)
+                # d1_error = back_prop(actvtn1, theta1, d2_error)
 
-                dx_delta += numpy.dot(d3_error, actvtn2.T)
-                d1_delta += numpy.dot(d2_error, actvtn1.T)
+                # dx_delta += numpy.dot(d3_error, actvtn2.T)
+                # d1_delta += numpy.dot(d2_error, actvtn1.T)
+
+                d2_error = numpy.multiply(d3_error, sig(actvtn3, True))
+                d1_error = back_prop(actvtn2, thetax, d2_error)
+
+                dx_delta += numpy.dot(d2_error, actvtn2.T)
+                d1_delta += numpy.dot(d1_error, actvtn1.T)
 
             theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
             thetax -= alpha * (dx_delta / samples + (lamb * thetax))
@@ -120,11 +125,17 @@ def NeuralNet(x, y):
 
             calc_err(i, 0, d3_error)
 
-            d2_error = back_prop(actvtn2, thetax, d3_error)
-            d1_error = back_prop(actvtn1, theta1, d2_error)
+            # d2_error = back_prop(actvtn2, thetax, d3_error)
+            # d1_error = back_prop(actvtn1, theta1, d2_error)
 
-            dx_delta += numpy.dot(d3_error, actvtn2.T)
-            d1_delta += numpy.dot(d2_error, actvtn1.T)
+            # dx_delta += numpy.dot(d3_error, actvtn2.T)
+            # d1_delta += numpy.dot(d2_error, actvtn1.T)
+
+            d2_error = numpy.multiply(d3_error, sig(actvtn3, True))
+            d1_error = back_prop(actvtn2, thetax, d2_error)
+
+            dx_delta += numpy.dot(d2_error, actvtn2.T)
+            d1_delta += numpy.dot(d1_error, actvtn1.T)
 
             theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
             thetax -= alpha * (dx_delta / samples + (lamb * thetax))
@@ -146,11 +157,17 @@ def NeuralNet(x, y):
 
                 calc_err(i, j, d3_error)
 
-                d2_error = back_prop(actvtn2, thetax, d3_error)
-                d1_error = back_prop(actvtn1, theta1, d2_error)
+                # d2_error = back_prop(actvtn2, thetax, d3_error)
+                # d1_error = back_prop(actvtn1, theta1, d2_error)
 
-                dx_delta += numpy.dot(d3_error, actvtn2.T)
-                d1_delta += numpy.dot(d2_error, actvtn1.T)
+                # dx_delta += numpy.dot(d3_error, actvtn2.T)
+                # d1_delta += numpy.dot(d2_error, actvtn1.T)
+
+                d2_error = numpy.multiply(d3_error, sig(actvtn3, True))
+                d1_error = back_prop(actvtn2, thetax, d2_error)
+
+                dx_delta += numpy.dot(d2_error, actvtn2.T)
+                d1_delta += numpy.dot(d1_error, actvtn1.T)
 
                 theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
                 thetax -= alpha * (dx_delta / samples + (lamb * thetax))
@@ -171,11 +188,17 @@ def NeuralNet(x, y):
 
                 calc_err(i, j, d3_error)
 
-                d2_error = back_prop(actvtn2, thetax, d3_error)
-                d1_error = back_prop(actvtn1, theta1, d2_error)
+                # d2_error = back_prop(actvtn2, thetax, d3_error)
+                # d1_error = back_prop(actvtn1, theta1, d2_error)
 
-                dx_delta += numpy.dot(d3_error, actvtn2.T)
-                d1_delta += numpy.dot(d2_error, actvtn1.T)
+                # dx_delta += numpy.dot(d3_error, actvtn2.T)
+                # d1_delta += numpy.dot(d2_error, actvtn1.T)
+
+                d2_error = numpy.multiply(d3_error, sig(actvtn3, True))
+                d1_error = back_prop(actvtn2, thetax, d2_error)
+
+                dx_delta += numpy.dot(d2_error, actvtn2.T)
+                d1_delta += numpy.dot(d1_error, actvtn1.T)
 
                 if (j % batchsize == 0) & (j != 0):
                     theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
