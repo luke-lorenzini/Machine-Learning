@@ -5,7 +5,7 @@ def RecurrentNeuralNet(x, y):
     from ML.helpers import append
     from ML.helpers import calc_alpha
     from ML.helpers import calc_z
-    from ML.helpers import sigmoid
+    from ML.helpers import tanh
 
     # mode = 0, batch gradient descent
     # mode = 1, vectorized batch gradient descent
@@ -45,11 +45,12 @@ def RecurrentNeuralNet(x, y):
 
     ### Initialization ###
     # Use an [mxn] matrix to create an [nx(n+1)]
-    theta1 = init_weights(arch[1], arch[0] + bias)
-    thetax = init_weights(arch[len(arch) - 1], arch[1] + bias)
+    U = init_weights(arch[1], arch[0] + bias)
+    V = init_weights(arch[len(arch) - 1], arch[1] + bias)
+    W = init_weights(arch[1], arch[1] + bias)
 
-    d1_delta = numpy.zeros((theta1.shape[0], theta1.shape[1]))
-    dx_delta = numpy.zeros((thetax.shape[0], thetax.shape[1]))
+    d1_delta = numpy.zeros((U.shape[0], U.shape[1]))
+    dx_delta = numpy.zeros((V.shape[0], V.shape[1]))
 
     def fwd_prop(mat, theta):
         """Forward Propogation"""
@@ -59,7 +60,7 @@ def RecurrentNeuralNet(x, y):
         z = calc_z(mat, theta)
 
         # Step 3, transform z
-        act = sigmoid(z)
+        act = tanh(z)
 
         return act
 
@@ -74,12 +75,12 @@ def RecurrentNeuralNet(x, y):
                 error = numpy.mean(numpy.abs(d3_error))
                 print(100 * numpy.mean(numpy.abs(d3_error)))
 
-        d2_error = numpy.multiply(numpy.dot(thetax.T, d3_error), sigmoid(act2, True))
+        d2_error = numpy.multiply(numpy.dot(V.T, d3_error), tanh(act2, True))
 
         # Calculate errors for layer 2
         if bias > 0:
             d2_error = numpy.delete(d2_error, 0, 0)
-        d1_error = numpy.multiply(numpy.dot(theta1.T, d2_error), sigmoid(act1, True))
+        d1_error = numpy.multiply(numpy.dot(U.T, d2_error), tanh(act1, True))
 
         return d1_error, d2_error, d3_error
 
@@ -94,12 +95,12 @@ def RecurrentNeuralNet(x, y):
                 error = numpy.mean(numpy.abs(d3_error))
                 print(100 * numpy.mean(numpy.abs(d3_error)))
 
-        d2_error = numpy.multiply(numpy.dot(thetax.T, d3_error), sigmoid(act2, True))
+        d2_error = numpy.multiply(numpy.dot(V.T, d3_error), tanh(act2, True))
 
         # Calculate errors for layer 2
         if bias > 0:
             d2_error = numpy.delete(d2_error, 0, 0)
-        d1_error = numpy.multiply(numpy.dot(theta1.T, d2_error), sigmoid(act1, True))
+        d1_error = numpy.multiply(numpy.dot(U.T, d2_error), tanh(act1, True))
 
         return d1_error, d2_error, d3_error
 
@@ -120,11 +121,11 @@ def RecurrentNeuralNet(x, y):
                 if bias > 0:
                     actvtn1 = append(actvtn1)
 
-                actvtn2 = fwd_prop(actvtn1, theta1)
+                actvtn2 = fwd_prop(actvtn1, U)
                 if bias > 0:
                     actvtn2 = append(actvtn2)
 
-                actvtn3 = fwd_prop(actvtn2, thetax)
+                actvtn3 = fwd_prop(actvtn2, V)
 
                 # Back Propogation
                 d1_error, d2_error, d3_error = back_prop(j, i, out_mat, actvtn1, actvtn2, actvtn3)
@@ -132,8 +133,8 @@ def RecurrentNeuralNet(x, y):
                 dx_delta += numpy.dot(d3_error, actvtn2.T)
                 d1_delta += numpy.dot(d2_error, actvtn1.T)
 
-            theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
-            thetax -= alpha * (dx_delta / samples + (lamb * thetax))
+            U -= alpha * (d1_delta / samples + (lamb * U))
+            V -= alpha * (dx_delta / samples + (lamb * V))
 
         elif mode == 1: # vectorized batch gradient descent
             # Calculate the whole shebang
@@ -146,11 +147,11 @@ def RecurrentNeuralNet(x, y):
             if bias > 0:
                 actvtn1 = append(actvtn1)
 
-            actvtn2 = fwd_prop(actvtn1, theta1)
+            actvtn2 = fwd_prop(actvtn1, U)
             if bias > 0:
                 actvtn2 = append(actvtn2)
 
-            actvtn3 = fwd_prop(actvtn2, thetax)
+            actvtn3 = fwd_prop(actvtn2, V)
 
             # Back Propogation
             d1_error, d2_error, d3_error = back_prop(0, i, out_mat, actvtn1, actvtn2, actvtn3)
@@ -158,8 +159,8 @@ def RecurrentNeuralNet(x, y):
             dx_delta += numpy.dot(d3_error, actvtn2.T)
             d1_delta += numpy.dot(d2_error, actvtn1.T)
 
-            theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
-            thetax -= alpha * (dx_delta / samples + (lamb * thetax))
+            U -= alpha * (d1_delta / samples + (lamb * U))
+            V -= alpha * (dx_delta / samples + (lamb * V))
 
         elif mode == 2: # stochastic gradient descent
             # Update for each sample
@@ -173,11 +174,11 @@ def RecurrentNeuralNet(x, y):
                 if bias > 0:
                     actvtn1 = append(actvtn1)
 
-                actvtn2 = fwd_prop(actvtn1, theta1)
+                actvtn2 = fwd_prop(actvtn1, U)
                 if bias > 0:
                     actvtn2 = append(actvtn2)
 
-                actvtn3 = fwd_prop(actvtn2, thetax)
+                actvtn3 = fwd_prop(actvtn2, V)
 
                 # Back Propogation
                 d1_error, d2_error, d3_error = back_prop(j, i, out_mat, actvtn1, actvtn2, actvtn3)
@@ -185,8 +186,8 @@ def RecurrentNeuralNet(x, y):
                 dx_delta += numpy.dot(d3_error, actvtn2.T)
                 d1_delta += numpy.dot(d2_error, actvtn1.T)
 
-                theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
-                thetax -= alpha * (dx_delta / samples + (lamb * thetax))
+                U -= alpha * (d1_delta / samples + (lamb * U))
+                V -= alpha * (dx_delta / samples + (lamb * V))
         elif mode == 3: # mini-batch gradient descent
             # Process 'mini-batch' number of samples, then update
             for j in range(samples):
@@ -199,11 +200,11 @@ def RecurrentNeuralNet(x, y):
                 if bias > 0:
                     actvtn1 = append(actvtn1)
 
-                actvtn2 = fwd_prop(actvtn1, theta1)
+                actvtn2 = fwd_prop(actvtn1, U)
                 if bias > 0:
                     actvtn2 = append(actvtn2)
 
-                actvtn3 = fwd_prop(actvtn2, thetax)
+                actvtn3 = fwd_prop(actvtn2, V)
 
                 # Back Propogation
                 d1_error, d2_error, d3_error = back_prop(j, i, out_mat, actvtn1, actvtn2, actvtn3)
@@ -212,26 +213,26 @@ def RecurrentNeuralNet(x, y):
                 d1_delta += numpy.dot(d2_error, actvtn1.T)
 
                 if (j % batchsize == 0) & (j != 0):
-                    theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
-                    thetax -= alpha * (dx_delta / samples + (lamb * thetax))
+                    U -= alpha * (d1_delta / samples + (lamb * U))
+                    V -= alpha * (dx_delta / samples + (lamb * V))
 
             # Update one final time to account for the remaining samples
-            theta1 -= alpha * (d1_delta / samples + (lamb * theta1))
-            thetax -= alpha * (dx_delta / samples + (lamb * thetax))
+            U -= alpha * (d1_delta / samples + (lamb * U))
+            V -= alpha * (dx_delta / samples + (lamb * V))
 
     # Check the results by analyzing one training example (in this case 0)
     check1 = myx
     if bias > 0:
         check1 = append(check1)
-    check2 = calc_z(check1, theta1)
-    check3 = sigmoid(check2)
+    check2 = calc_z(check1, U)
+    check3 = tanh(check2)
     if bias > 0:
         check3 = append(check3)
-    check3 = calc_z(check3, thetax)
-    check4 = sigmoid(check3)
+    check3 = calc_z(check3, V)
+    check4 = tanh(check3)
     print(numpy.round(100 * check4))
 
     # if bias > 0:
         # theta1 = numpy.delete(theta1, 0, 0)
         # thetax = numpy.delete(thetax, 0, 0)
-    return theta1, thetax
+    return U, V
