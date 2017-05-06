@@ -26,16 +26,14 @@ def NeuralNet(x, y):
     # theta -= alpha(n1 + n2 + ... + nN)
 
     # Set random seed for ease of testing
-    # numpy.random.seed(1)
+    numpy.random.seed(1)
 
     myx = x.T
     myy = y.T
 
-    epochs = 100
+    epochs = 1000
     samples = myx.shape[1]
     lamb = 0.001
-    # 0 = no bias on layers, 1 = one bias layer
-    bias = 0
     batchsize = 100
 
     error = 1
@@ -45,8 +43,8 @@ def NeuralNet(x, y):
 
     ### Initialization ###
     # Use an [mxn] matrix to create an [nx(n+1)]
-    theta1 = init_weights(arch[1], arch[0] + bias)
-    thetax = init_weights(arch[len(arch) - 1], arch[1] + bias)
+    theta1 = init_weights(arch[1], arch[0])
+    thetax = init_weights(arch[len(arch) - 1], arch[1])
 
     d1_delta = numpy.zeros((theta1.shape[0], theta1.shape[1]))
     dx_delta = numpy.zeros((thetax.shape[0], thetax.shape[1]))
@@ -89,13 +87,7 @@ def NeuralNet(x, y):
 
                 # Forward Propogation
                 actvtn1 = in_mat
-                if bias > 0:
-                    actvtn1 = append(actvtn1)
-
                 actvtn2 = fwd_prop(actvtn1, theta1)
-                if bias > 0:
-                    actvtn2 = append(actvtn2)
-
                 actvtn3 = fwd_prop(actvtn2, thetax)
 
                 # Back Propogation
@@ -104,9 +96,6 @@ def NeuralNet(x, y):
                 calc_err(i, j, d3_error)
 
                 d2_error = back_prop(actvtn2, thetax, d3_error)
-                if bias > 0:
-                    d2_error = numpy.delete(d2_error, 0, 0)
-
                 d1_error = back_prop(actvtn1, theta1, d2_error)
 
                 dx_delta += numpy.dot(d3_error, actvtn2.T)
@@ -123,13 +112,7 @@ def NeuralNet(x, y):
 
             # Forward Propogation
             actvtn1 = in_mat
-            if bias > 0:
-                actvtn1 = append(actvtn1)
-
             actvtn2 = fwd_prop(actvtn1, theta1)
-            if bias > 0:
-                actvtn2 = append(actvtn2)
-
             actvtn3 = fwd_prop(actvtn2, thetax)
 
             # Back Propogation
@@ -138,9 +121,6 @@ def NeuralNet(x, y):
             calc_err(i, 0, d3_error)
 
             d2_error = back_prop(actvtn2, thetax, d3_error)
-            if bias > 0:
-                d2_error = numpy.delete(d2_error, 0, 0)
-
             d1_error = back_prop(actvtn1, theta1, d2_error)
 
             dx_delta += numpy.dot(d3_error, actvtn2.T)
@@ -158,13 +138,7 @@ def NeuralNet(x, y):
 
                 # Forward Propogation
                 actvtn1 = in_mat
-                if bias > 0:
-                    actvtn1 = append(actvtn1)
-
                 actvtn2 = fwd_prop(actvtn1, theta1)
-                if bias > 0:
-                    actvtn2 = append(actvtn2)
-
                 actvtn3 = fwd_prop(actvtn2, thetax)
 
                 # Back Propogation
@@ -173,9 +147,6 @@ def NeuralNet(x, y):
                 calc_err(i, j, d3_error)
 
                 d2_error = back_prop(actvtn2, thetax, d3_error)
-                if bias > 0:
-                    d2_error = numpy.delete(d2_error, 0, 0)
-
                 d1_error = back_prop(actvtn1, theta1, d2_error)
 
                 dx_delta += numpy.dot(d3_error, actvtn2.T)
@@ -192,13 +163,7 @@ def NeuralNet(x, y):
 
                 # Forward Propogation
                 actvtn1 = in_mat
-                if bias > 0:
-                    actvtn1 = append(actvtn1)
-
                 actvtn2 = fwd_prop(actvtn1, theta1)
-                if bias > 0:
-                    actvtn2 = append(actvtn2)
-
                 actvtn3 = fwd_prop(actvtn2, thetax)
 
                 # Back Propogation
@@ -207,9 +172,6 @@ def NeuralNet(x, y):
                 calc_err(i, j, d3_error)
 
                 d2_error = back_prop(actvtn2, thetax, d3_error)
-                if bias > 0:
-                    d2_error = numpy.delete(d2_error, 0, 0)
-
                 d1_error = back_prop(actvtn1, theta1, d2_error)
 
                 dx_delta += numpy.dot(d3_error, actvtn2.T)
@@ -225,17 +187,10 @@ def NeuralNet(x, y):
 
     # Check the results by analyzing one training example (in this case 0)
     check1 = myx
-    if bias > 0:
-        check1 = append(check1)
     check2 = calc_z(check1, theta1)
     check3 = sig(check2)
-    if bias > 0:
-        check3 = append(check3)
     check3 = calc_z(check3, thetax)
     check4 = sig(check3)
     print(numpy.round(100 * check4))
 
-    # if bias > 0:
-        # theta1 = numpy.delete(theta1, 0, 0)
-        # thetax = numpy.delete(thetax, 0, 0)
     return theta1, thetax
