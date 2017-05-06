@@ -1,6 +1,6 @@
 # Machine-Learning
 This a set of files used to test various concepts in machine learning.
 
-The key files here are NNTest.py which is a script that loads in datafiles, preprocesses the data, and runs the nerual net.
+In the main folder, Machine-Learning, are various scripts which can be run to test concepts.  In the child folder, ML, are the files which make up the neural network.
 
-Preprocessing is first normalized (mean_normalization.py), then principal component analysis (PCA.py) is done to minimize data being processed.  Finally, the Neural Network (neural_network.py) is run.
+The test script first reads in a dataset, runs Principle Component Analysis, then Mean Normalization to optimize the dataset.  Next, if desired, a K-Means Clustering algorithm can be executed to automagically group the data.  Results are then converted to one-hot vectors.  Finally, the neural net is run.
