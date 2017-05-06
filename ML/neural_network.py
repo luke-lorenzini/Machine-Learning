@@ -5,14 +5,13 @@ def NeuralNet(x, y):
     from ML.helpers import append
     from ML.helpers import calc_alpha
     from ML.helpers import calc_z
-    from ML.helpers import sigmoid
-    from ML.helpers import sigmoid_prime
+    from ML.helpers import sig
 
     # mode = 0, batch gradient descent
     # mode = 1, vectorized batch gradient descent
     # mode = 2, stochastic gradient descent
     # mode = 3, mini-batch gradient descent
-    mode = 3
+    mode = 2
 
     # Modify learning rate, alpha
     alpha = 1
@@ -32,7 +31,7 @@ def NeuralNet(x, y):
     myx = x.T
     myy = y.T
 
-    epochs = 1
+    epochs = 100
     samples = myx.shape[1]
     lamb = 0.001
     # 0 = no bias on layers, 1 = one bias layer
@@ -60,49 +59,21 @@ def NeuralNet(x, y):
         z = calc_z(mat, theta)
 
         # Step 3, transform z
-        act = sigmoid(z)
+        act = sig(z)
 
         return act
 
-    def back_propn(j, i, mat, act1, act2, act3):
+    def back_prop(act, mat, err):
         """ Back Propogation"""
-        # Calculate errors for layer 3
-        # d3_error = act3 - myy[:, j]
-        d3_error = act3 - mat
+        d_err = numpy.multiply(numpy.dot(mat.T, err), sig(act, True))
 
+        return d_err
+
+    def calc_err(i, j, err):
         if (i % (epochs / 10)) == 0:
             if j == 0:
-                error = numpy.mean(numpy.abs(d3_error))
-                print(100 * numpy.mean(numpy.abs(d3_error)))
-
-        d2_error = numpy.multiply(numpy.dot(thetax.T, d3_error), sigmoid_prime(act2))
-
-        # Calculate errors for layer 2
-        if bias > 0:
-            d2_error = numpy.delete(d2_error, 0, 0)
-        d1_error = numpy.multiply(numpy.dot(theta1.T, d2_error), sigmoid_prime(act1))
-
-        return d1_error, d2_error, d3_error
-
-    def back_prop(j, i, mat, act1, act2, act3):
-        """ Back Propogation"""
-        # Calculate errors for layer 3
-        # d3_error = act3 - myy[:, j]
-        d3_error = act3 - mat
-
-        if (i % (epochs / 10)) == 0:
-            if j == 0:
-                error = numpy.mean(numpy.abs(d3_error))
-                print(100 * numpy.mean(numpy.abs(d3_error)))
-
-        d2_error = numpy.multiply(numpy.dot(thetax.T, d3_error), sigmoid_prime(act2))
-
-        # Calculate errors for layer 2
-        if bias > 0:
-            d2_error = numpy.delete(d2_error, 0, 0)
-        d1_error = numpy.multiply(numpy.dot(theta1.T, d2_error), sigmoid_prime(act1))
-
-        return d1_error, d2_error, d3_error
+                error = numpy.mean(numpy.abs(err))
+                print(100 * numpy.mean(numpy.abs(err)))
 
     for i in range(epochs):
     # i = 0
@@ -128,7 +99,15 @@ def NeuralNet(x, y):
                 actvtn3 = fwd_prop(actvtn2, thetax)
 
                 # Back Propogation
-                d1_error, d2_error, d3_error = back_prop(j, i, out_mat, actvtn1, actvtn2, actvtn3)
+                d3_error = actvtn3 - out_mat
+
+                calc_err(i, j, d3_error)
+
+                d2_error = back_prop(actvtn2, thetax, d3_error)
+                if bias > 0:
+                    d2_error = numpy.delete(d2_error, 0, 0)
+
+                d1_error = back_prop(actvtn1, theta1, d2_error)
 
                 dx_delta += numpy.dot(d3_error, actvtn2.T)
                 d1_delta += numpy.dot(d2_error, actvtn1.T)
@@ -154,7 +133,15 @@ def NeuralNet(x, y):
             actvtn3 = fwd_prop(actvtn2, thetax)
 
             # Back Propogation
-            d1_error, d2_error, d3_error = back_prop(0, i, out_mat, actvtn1, actvtn2, actvtn3)
+            d3_error = actvtn3 - out_mat
+
+            calc_err(i, 0, d3_error)
+
+            d2_error = back_prop(actvtn2, thetax, d3_error)
+            if bias > 0:
+                d2_error = numpy.delete(d2_error, 0, 0)
+
+            d1_error = back_prop(actvtn1, theta1, d2_error)
 
             dx_delta += numpy.dot(d3_error, actvtn2.T)
             d1_delta += numpy.dot(d2_error, actvtn1.T)
@@ -181,7 +168,15 @@ def NeuralNet(x, y):
                 actvtn3 = fwd_prop(actvtn2, thetax)
 
                 # Back Propogation
-                d1_error, d2_error, d3_error = back_prop(j, i, out_mat, actvtn1, actvtn2, actvtn3)
+                d3_error = actvtn3 - out_mat
+
+                calc_err(i, j, d3_error)
+
+                d2_error = back_prop(actvtn2, thetax, d3_error)
+                if bias > 0:
+                    d2_error = numpy.delete(d2_error, 0, 0)
+
+                d1_error = back_prop(actvtn1, theta1, d2_error)
 
                 dx_delta += numpy.dot(d3_error, actvtn2.T)
                 d1_delta += numpy.dot(d2_error, actvtn1.T)
@@ -207,7 +202,15 @@ def NeuralNet(x, y):
                 actvtn3 = fwd_prop(actvtn2, thetax)
 
                 # Back Propogation
-                d1_error, d2_error, d3_error = back_prop(j, i, out_mat, actvtn1, actvtn2, actvtn3)
+                d3_error = actvtn3 - out_mat
+
+                calc_err(i, j, d3_error)
+
+                d2_error = back_prop(actvtn2, thetax, d3_error)
+                if bias > 0:
+                    d2_error = numpy.delete(d2_error, 0, 0)
+
+                d1_error = back_prop(actvtn1, theta1, d2_error)
 
                 dx_delta += numpy.dot(d3_error, actvtn2.T)
                 d1_delta += numpy.dot(d2_error, actvtn1.T)
@@ -225,11 +228,14 @@ def NeuralNet(x, y):
     if bias > 0:
         check1 = append(check1)
     check2 = calc_z(check1, theta1)
-    check3 = sigmoid(check2)
+    check3 = sig(check2)
     if bias > 0:
         check3 = append(check3)
     check3 = calc_z(check3, thetax)
-    check4 = sigmoid(check3)
+    check4 = sig(check3)
     print(numpy.round(100 * check4))
 
+    # if bias > 0:
+        # theta1 = numpy.delete(theta1, 0, 0)
+        # thetax = numpy.delete(thetax, 0, 0)
     return theta1, thetax
