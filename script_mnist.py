@@ -27,7 +27,7 @@ valuesy = one_hot(valuesy, 10)
 valuesz = valuesx
 
 # valuesz = prince(valuesz, rate)
-# valuesz = meannorm(valuesz)
+valuesz = meannorm(valuesz)
 
 # clusters = 10
 # timenow = time()
