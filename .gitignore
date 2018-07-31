@@ -1,0 +1,11 @@
+*.pyc
+*.wav
+*.png
+*.csv
+*.json
+.vscode/.ropeproject/config.py
+.vscode/.ropeproject/objectdb
+*.txt
+*.bmp
+Kar.py
+ML/test.py
