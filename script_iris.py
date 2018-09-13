@@ -10,7 +10,7 @@ from ML.one_hot import one_hot
 # The compression rate for PCA
 RATE = 99
 
-FILENAME = r'..\Machine-Learning\Test-Data\iris\irisNN.csv'
+FILENAME = r'..\Machine-Learning-py\Test-Data\iris\irisNN.csv'
 with open(FILENAME, newline='') as csvfile:
     valuesx = np.matrix(np.loadtxt(csvfile, delimiter=",", usecols=(0, 1, 2, 3)))
 with open(FILENAME, newline='') as csvfile:
@@ -18,13 +18,14 @@ with open(FILENAME, newline='') as csvfile:
 
 valuesz = valuesx
 
-valuesz = prince(valuesz, RATE)
-valuesz = meannorm(valuesz)
+#valuesz = prince(valuesz, RATE)
+#valuesz = meannorm(valuesz)
 
-# CLUSTERS = 3
-# TIMENOW = time()
-# valuesy = one_hot(kmeans(valuesz, CLUSTERS), CLUSTERS)
-# print(time() - TIMENOW)
+CLUSTERS = 3
+TIMENOW = time()
+#don't use k-means clustering
+#valuesy = one_hot(kmeans(valuesz, CLUSTERS), CLUSTERS)
+print(time() - TIMENOW)
 
 TIMENOW = time()
 t1, t2 = NeuralNet(valuesz, valuesy)
