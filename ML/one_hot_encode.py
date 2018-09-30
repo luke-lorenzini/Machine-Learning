@@ -1,4 +1,4 @@
-def one_hot(onehot, N):
+def one_hot_encode(onehot, N):
     import numpy as np
 
     # Convert from integer to one hot, crude, but functional
